@@ -6,6 +6,9 @@ export default class slide {
     this.Start = this.Start.bind(this);
     this.Move = this.Move.bind(this);
     this.End = this.End.bind(this);
+    this.StartTouch = this.StartTouch.bind(this);
+    this.MoveTouch = this.MoveTouch.bind(this);
+    this.EndTouch = this.EndTouch.bind(this);
 
     this.distancia = {
       posicaoFinal: 0,
@@ -26,6 +29,7 @@ export default class slide {
 
   Start(e) {
     e.preventDefault();
+    console.log(this.wrapper);
     this.wrapper.addEventListener("mousemove", this.Move);
     this.distancia.startX = e.clientX;
   }
@@ -35,15 +39,35 @@ export default class slide {
     const finalPosition = this.atualizaPosicao(e.clientX);
     this.moveSlide(finalPosition);
   }
-
   End(e) {
     this.wrapper.removeEventListener("mousemove", this.Move);
+    this.distancia.posicaoFinal = this.distancia.moveFinal;
+  }
+
+  // touch
+
+  StartTouch(e) {
+    console.log(this.wrapper);
+    this.wrapper.addEventListener("touchmove", this.MoveTouch);
+    this.distancia.startX = e.changedTouches[0].clientX;
+  }
+
+  MoveTouch(e) {
+    const finalPosition = this.atualizaPosicao(e.changedTouches[0].clientX);
+    this.moveSlide(finalPosition);
+  }
+
+  EndTouch(e) {
+    this.wrapper.removeEventListener("touchmove", this.MoveTouch);
     this.distancia.posicaoFinal = this.distancia.moveFinal;
   }
 
   addEvents() {
     this.wrapper.addEventListener("mousedown", this.Start);
     this.wrapper.addEventListener("mouseup", this.End);
+    // touch
+    this.wrapper.addEventListener("touchstart", this.StartTouch);
+    this.wrapper.addEventListener("touchend", this.EndTouch);
   }
 
   init() {
