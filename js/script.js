@@ -1,4 +1,7 @@
 import slide from "./slide.js";
 
-const desliza = new slide(".slide", ".container");
-desliza.init();
+window.addEventListener("load", () => {
+  const desliza = new slide(".slide", ".container");
+  desliza.init();
+  desliza.nextSlide(2);
+});

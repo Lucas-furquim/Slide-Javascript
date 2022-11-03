@@ -17,6 +17,8 @@ export default class slide {
     };
   }
 
+  // eventos
+
   moveSlide(distX) {
     this.distancia.moveFinal = distX;
     this.slide.style.transform = `translate3d(${distX}px, 0, 0)`;
@@ -29,7 +31,6 @@ export default class slide {
 
   Start(e) {
     e.preventDefault();
-    console.log(this.wrapper);
     this.wrapper.addEventListener("mousemove", this.Move);
     this.distancia.startX = e.clientX;
   }
@@ -68,10 +69,47 @@ export default class slide {
     // touch
     this.wrapper.addEventListener("touchstart", this.StartTouch);
     this.wrapper.addEventListener("touchend", this.EndTouch);
+    // click
+  }
+
+  // slide config
+
+  slideCalcula(img) {
+    const largura = img.getBoundingClientRect();
+    const janelaWidth = window.innerWidth;
+    const soma = (janelaWidth - largura.width) / 2;
+    const total = -(img.offsetLeft - soma);
+    return total;
+  }
+
+  slideConfig() {
+    this.slideArray = [...this.slide.children].map((item) => {
+      const posicao = item.offsetLeft;
+      const margin = this.slideCalcula(item);
+      return {
+        img: margin,
+      };
+    });
+  }
+
+  slideIndexNav(index) {
+    const last = this.slideArray.length - 1;
+    return (this.index = {
+      prev: index ? index - 1 : undefined,
+      active: index,
+      next: index === last ? undefined : index + 1,
+    });
+  }
+
+  nextSlide(index) {
+    this.moveSlide(this.slideArray[index].img);
+    this.slideIndexNav(index);
+    this.distancia.posicaoFinal = this.slideArray[index].img;
   }
 
   init() {
     this.addEvents();
+    this.slideConfig();
     return this;
   }
 }
