@@ -19,6 +19,10 @@ export default class slide {
 
   // eventos
 
+  transition(ativo) {
+    this.slide.style.transition = ativo ? "transform .3s" : "";
+  }
+
   moveSlide(distX) {
     this.distancia.moveFinal = distX;
     this.slide.style.transform = `translate3d(${distX}px, 0, 0)`;
@@ -33,6 +37,7 @@ export default class slide {
     e.preventDefault();
     this.wrapper.addEventListener("mousemove", this.Move);
     this.distancia.startX = e.clientX;
+    this.transition(false);
   }
 
   Move(e) {
@@ -40,9 +45,25 @@ export default class slide {
     const finalPosition = this.atualizaPosicao(e.clientX);
     this.moveSlide(finalPosition);
   }
+
   End(e) {
     this.wrapper.removeEventListener("mousemove", this.Move);
     this.distancia.posicaoFinal = this.distancia.moveFinal;
+    this.TrocaNoFinal();
+    this.transition(true);
+  }
+
+  TrocaNoFinal() {
+    if (this.distancia.movimento > 180 && this.numero.next !== undefined) {
+      this.proximoSlide();
+    } else if (
+      this.distancia.movimento < -180 &&
+      this.numero.prev !== undefined
+    ) {
+      this.prevSlide();
+    } else {
+      this.nextSlide(this.numero.active);
+    }
   }
 
   // touch
@@ -51,6 +72,7 @@ export default class slide {
     console.log(this.wrapper);
     this.wrapper.addEventListener("touchmove", this.MoveTouch);
     this.distancia.startX = e.changedTouches[0].clientX;
+    this.transition(false);
   }
 
   MoveTouch(e) {
@@ -61,6 +83,7 @@ export default class slide {
   EndTouch(e) {
     this.wrapper.removeEventListener("touchmove", this.MoveTouch);
     this.distancia.posicaoFinal = this.distancia.moveFinal;
+    this.transition(true);
   }
 
   addEvents() {
@@ -92,24 +115,40 @@ export default class slide {
     });
   }
 
-  slideIndexNav(index) {
+  slideIndexNav(numero) {
     const last = this.slideArray.length - 1;
-    return (this.index = {
-      prev: index ? index - 1 : undefined,
-      active: index,
-      next: index === last ? undefined : index + 1,
+    return (this.numero = {
+      prev: numero ? numero - 1 : undefined,
+      active: numero,
+      next: numero === last ? undefined : numero + 1,
     });
   }
 
-  nextSlide(index) {
-    this.moveSlide(this.slideArray[index].img);
-    this.slideIndexNav(index);
-    this.distancia.posicaoFinal = this.slideArray[index].img;
+  nextSlide(numero) {
+    this.transition(true);
+    this.moveSlide(this.slideArray[numero].img);
+    this.slideIndexNav(numero);
+    this.distancia.posicaoFinal = this.slideArray[numero].img;
+  }
+
+  // nav
+
+  prevSlide() {
+    if (this.numero.prev !== undefined) {
+      this.nextSlide(this.numero.prev);
+    }
+  }
+
+  proximoSlide() {
+    if (this.numero.next !== undefined) {
+      this.nextSlide(this.numero.next);
+    }
   }
 
   init() {
     this.addEvents();
     this.slideConfig();
+    this.nextSlide(2);
     return this;
   }
 }
