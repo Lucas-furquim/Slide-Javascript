@@ -1,3 +1,5 @@
+import debbounce from "./debounce.js";
+
 export default class slide {
   constructor(slide, wrap) {
     this.slide = document.querySelector(slide);
@@ -9,6 +11,7 @@ export default class slide {
     this.StartTouch = this.StartTouch.bind(this);
     this.MoveTouch = this.MoveTouch.bind(this);
     this.EndTouch = this.EndTouch.bind(this);
+    this.rezise = debbounce(this.rezise.bind(this), 200);
 
     this.distancia = {
       posicaoFinal: 0,
@@ -51,6 +54,7 @@ export default class slide {
     this.distancia.posicaoFinal = this.distancia.moveFinal;
     this.TrocaNoFinal();
     this.transition(true);
+    this.addAtivo();
   }
 
   TrocaNoFinal() {
@@ -84,6 +88,7 @@ export default class slide {
     this.wrapper.removeEventListener("touchmove", this.MoveTouch);
     this.distancia.posicaoFinal = this.distancia.moveFinal;
     this.transition(true);
+    this.addAtivo();
   }
 
   addEvents() {
@@ -111,6 +116,7 @@ export default class slide {
       const margin = this.slideCalcula(item);
       return {
         img: margin,
+        elemento: item,
       };
     });
   }
@@ -145,10 +151,31 @@ export default class slide {
     }
   }
 
+  addAtivo() {
+    this.slideArray.forEach((item) => {
+      item.elemento.classList.remove("ativo");
+    });
+    this.slideArray[this.numero.active].elemento.classList.add("ativo");
+  }
+
+  rezise() {
+    setTimeout(() => {
+      this.slideConfig();
+      this.nextSlide(this.numero.active);
+    }, 1000);
+  }
+
+  addRezise() {
+    window.addEventListener("resize", () => {
+      this.rezise();
+    });
+  }
   init() {
     this.addEvents();
     this.slideConfig();
     this.nextSlide(2);
+    this.addRezise();
+    this.addAtivo();
     return this;
   }
 }
