@@ -11,6 +11,7 @@ export default class slide {
     this.StartTouch = this.StartTouch.bind(this);
     this.MoveTouch = this.MoveTouch.bind(this);
     this.EndTouch = this.EndTouch.bind(this);
+    this.addArrowEvent = this.addArrowEvent.bind(this);
     this.rezise = debbounce(this.rezise.bind(this), 200);
 
     this.distancia = {
@@ -170,12 +171,33 @@ export default class slide {
       this.rezise();
     });
   }
+
+  // acessorios
+
+  addArrow(prev, next) {
+    this.prevElement = document.querySelector(next);
+    this.nextElement = document.querySelector(prev);
+    this.addArrowEvent();
+  }
+
+  addArrowEvent() {
+    this.prevElement.addEventListener("click", () => {
+      this.proximoSlide();
+      this.addAtivo();
+    });
+    this.nextElement.addEventListener("click", () => {
+      this.prevSlide();
+      this.addAtivo();
+    });
+  }
+
   init() {
     this.addEvents();
     this.slideConfig();
-    this.nextSlide(2);
+    this.nextSlide(0);
     this.addRezise();
     this.addAtivo();
+    this.addArrow(".prev", ".next");
     return this;
   }
 }
