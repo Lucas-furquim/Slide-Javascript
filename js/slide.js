@@ -12,6 +12,7 @@ export default class slide {
     this.MoveTouch = this.MoveTouch.bind(this);
     this.EndTouch = this.EndTouch.bind(this);
     this.addArrowEvent = this.addArrowEvent.bind(this);
+    this.eventControl = this.eventControl.bind(this);
     this.rezise = debbounce(this.rezise.bind(this), 200);
 
     this.distancia = {
@@ -131,7 +132,19 @@ export default class slide {
     });
   }
 
-  nextSlide(numero) {
+  nextSlide(numero, boleano) {
+    if (boleano == "ativar") {
+      this.nextSlideNav(numero);
+    } else {
+      console.log(numero, boleano);
+      this.transition(true);
+      this.moveSlide(this.slideArray[numero].img);
+      this.slideIndexNav(numero);
+      this.distancia.posicaoFinal = this.slideArray[numero].img;
+    }
+  }
+
+  nextSlideNav(numero) {
     this.transition(true);
     this.moveSlide(this.slideArray[numero].img);
     this.slideIndexNav(numero);
@@ -189,6 +202,34 @@ export default class slide {
       this.prevSlide();
       this.addAtivo();
     });
+  }
+
+  // paginazação
+
+  createControl() {
+    const control = document.createElement("ul");
+    control.dataset.controle = "slide-pag";
+    this.slideArray.forEach((item, index) => {
+      control.innerHTML += `<li><a href='#slide-pag${index + 1}'>${
+        index + 1
+      }</a></li>`;
+    });
+    this.wrapper.appendChild(control);
+    return control;
+  }
+
+  eventControl(item, index) {
+    item.addEventListener("click", (e) => {
+      e.preventDefault();
+      this.nextSlide(index, "ativar");
+    });
+  }
+
+  addControl(cunstomControl) {
+    this.control =
+      document.querySelector(cunstomControl) || this.createControl();
+    this.controlArray = Array.from([this.control.children][0]);
+    this.controlArray.forEach(this.eventControl);
   }
 
   init() {
