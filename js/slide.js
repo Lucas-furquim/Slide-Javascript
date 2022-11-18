@@ -1,9 +1,10 @@
 import debbounce from "./debounce.js";
 
 export default class slide {
-  constructor(slide, wrap) {
+  constructor(slide, wrap, btnNav) {
     this.slide = document.querySelector(slide);
     this.wrapper = document.querySelector(wrap);
+    this.btnNav = document.querySelector(btnNav);
 
     this.Start = this.Start.bind(this);
     this.Move = this.Move.bind(this);
@@ -132,19 +133,8 @@ export default class slide {
     });
   }
 
-  nextSlide(numero, boleano) {
-    if (boleano == "ativar") {
-      this.nextSlideNav(numero);
-    } else {
-      console.log(numero, boleano);
-      this.transition(true);
-      this.moveSlide(this.slideArray[numero].img);
-      this.slideIndexNav(numero);
-      this.distancia.posicaoFinal = this.slideArray[numero].img;
-    }
-  }
-
-  nextSlideNav(numero) {
+  nextSlide(numero) {
+    console.log(numero);
     this.transition(true);
     this.moveSlide(this.slideArray[numero].img);
     this.slideIndexNav(numero);
@@ -214,14 +204,15 @@ export default class slide {
         index + 1
       }</a></li>`;
     });
-    this.wrapper.appendChild(control);
+    this.btnNav.appendChild(control);
     return control;
   }
 
   eventControl(item, index) {
     item.addEventListener("click", (e) => {
       e.preventDefault();
-      this.nextSlide(index, "ativar");
+      this.nextSlide(index);
+      this.addAtivo();
     });
   }
 
