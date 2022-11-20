@@ -82,13 +82,14 @@ export default class slide {
   // touch
 
   StartTouch(e) {
-    console.log(this.wrapper);
+    e.preventDefault();
     this.wrapper.addEventListener("touchmove", this.MoveTouch);
     this.distancia.startX = e.changedTouches[0].clientX;
     this.transition(false);
   }
 
   MoveTouch(e) {
+    e.preventDefault();
     const finalPosition = this.atualizaPosicao(e.changedTouches[0].clientX);
     this.moveSlide(finalPosition);
   }
@@ -96,6 +97,7 @@ export default class slide {
   EndTouch(e) {
     this.wrapper.removeEventListener("touchmove", this.MoveTouch);
     this.distancia.posicaoFinal = this.distancia.moveFinal;
+    this.TrocaNoFinal();
     this.transition(true);
     this.addAtivo();
   }
@@ -232,6 +234,7 @@ export default class slide {
   }
 
   activeControlClass() {
+    222;
     this.controlArray.forEach((item) => {
       item.classList.remove("ativo");
     });
