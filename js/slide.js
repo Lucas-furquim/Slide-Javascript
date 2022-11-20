@@ -14,7 +14,11 @@ export default class slide {
     this.EndTouch = this.EndTouch.bind(this);
     this.addArrowEvent = this.addArrowEvent.bind(this);
     this.eventControl = this.eventControl.bind(this);
+    this.activeControlClass = this.activeControlClass.bind(this);
     this.rezise = debbounce(this.rezise.bind(this), 200);
+
+    // event
+    this.changeEvent = new Event("changeEvent");
 
     this.distancia = {
       posicaoFinal: 0,
@@ -24,6 +28,8 @@ export default class slide {
   }
 
   // eventos
+
+  changeBtnEvent() {}
 
   transition(ativo) {
     this.slide.style.transition = ativo ? "transform .3s" : "";
@@ -134,11 +140,11 @@ export default class slide {
   }
 
   nextSlide(numero) {
-    console.log(numero);
     this.transition(true);
     this.moveSlide(this.slideArray[numero].img);
     this.slideIndexNav(numero);
     this.distancia.posicaoFinal = this.slideArray[numero].img;
+    this.wrapper.dispatchEvent(this.changeEvent);
   }
 
   // nav
@@ -214,6 +220,7 @@ export default class slide {
       this.nextSlide(index);
       this.addAtivo();
     });
+    this.wrapper.addEventListener("changeEvent", this.activeControlClass);
   }
 
   addControl(cunstomControl) {
@@ -221,6 +228,14 @@ export default class slide {
       document.querySelector(cunstomControl) || this.createControl();
     this.controlArray = Array.from([this.control.children][0]);
     this.controlArray.forEach(this.eventControl);
+    this.activeControlClass();
+  }
+
+  activeControlClass() {
+    this.controlArray.forEach((item) => {
+      item.classList.remove("ativo");
+    });
+    this.controlArray[this.numero.active].classList.add("ativo");
   }
 
   init() {
